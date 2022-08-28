@@ -24,10 +24,10 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         
-        self.setFixedSize(900, 800)
         self.setWindowTitle("Neuro-Image-Generator-GUI")
         self.out_dir = "outputs/txt2img-samples/samples"
         self.seed = 27
+        self.setBaseSize(1000, 1000)
         self.ddim_steps = 50
         self.plms = False
         self.laion = False
@@ -174,6 +174,6 @@ class MainWindow(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
-    window.show()
+    window.showNormal()
 
     app.exec_()
