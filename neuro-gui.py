@@ -75,7 +75,8 @@ class MainWindow(QMainWindow):
         self.layout.addRow(QLabel("Height:"), self.height_line)
         self.layout.addRow(QLabel("Width:"), self.width_line)
         self.layout.addRow(self.plms_bool,self.laion_bool)
-        self.layout.addRow(QLabel("Current Out Dir:"), self.out_log)
+        self.layout.addRow(QLabel("Current Out Dir:"))
+        self.layout.addRow(self.out_log)
         self.layout.addRow(self.select_dir_button)
         self.layout.addRow(self.start_button)
 
