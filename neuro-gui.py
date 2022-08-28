@@ -153,7 +153,7 @@ class MainWindow(QMainWindow):
 
         logging.debug(generated_string)
 
-        generated_string += "--skip_grid --n_samples 1"
+        generated_string += "--skip_grid --n_samples 1 --n_iter 1"
         process = subprocess.call(generated_string)
         last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
         last_image = max(last_images, key=os.path.getctime)
