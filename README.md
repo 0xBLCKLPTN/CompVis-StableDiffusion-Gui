@@ -1,5 +1,10 @@
-# CompVis-StableDiffusion-Gui
-Simple GUI for https://github.com/CompVis/stable-diffusion using pyqt5
+
+<div align = "center">
+  <h1>CompVis-StableDiffusion-Gui</h1>
+  <p>Simple GUI for https://github.com/CompVis/stable-diffusion using pyqt5</p>
+  <img src="https://github.com/blcklptn/CompVis-StableDiffusion-Gui/blob/main/rickroll.jpg")
+</div>
+
 
 ## Install:
 ```sh
