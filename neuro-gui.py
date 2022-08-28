@@ -160,7 +160,10 @@ class MainWindow(QMainWindow):
         self._set_image(last_image)
 
     def sel_dir(self):
-        self.out_dir = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        tmp = self.out_dir
+        self.out_dir = str(QFileDialog.getExistingDirectory(self, "Select \"outputs\" Directory"))
+        if not os.path.isdir(self.out_dir):
+            self.out_dir = tmp
         self.out_log.setText(self.out_dir)
 
     def laion_func(self, state):
