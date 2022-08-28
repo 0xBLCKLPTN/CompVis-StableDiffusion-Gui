@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
         self.select_dir_button = QtWidgets.QPushButton(self)
         self.select_dir_button.setText("Select Output Directory")
         self.out_log = QLabel(self.out_dir)
-        self.out_log.setFixedWidth(120)
+        self.out_log.setFixedWidth(500)
 
         self.layout.addRow(QLabel("Prompt:"), self.prompt)
         self.layout.addRow(QLabel("Seed:"), self.seed_line)
