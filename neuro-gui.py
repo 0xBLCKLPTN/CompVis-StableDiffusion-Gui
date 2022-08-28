@@ -27,6 +27,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
+        self.prompt="a photograph of an astronaut riding a horse"
         self.setBaseSize(1000, 1000)
         self.setWindowTitle("Stable Diffusion GUI")
         self.out_dir = os.path.join(os.getcwd(), "outputs")
@@ -53,14 +54,20 @@ class MainWindow(QMainWindow):
         self.label.setPixmap(self.pixmap)
 
     def _init_settings(self):
-        self.prompt = QLineEdit(self)
+        self.prompt_line = QLineEdit(self)
+        self.prompt_line.setText(self.prompt)
         self.seed_line = QLineEdit(self)
+        self.seed_line.setText(str(self.seed))
         self.ddim_line = QLineEdit(self)
+        self.ddim_line.setText(str(self.ddim_steps))
         self.height_line = QLineEdit(self)
+        self.height_line.setText(str(self.height))
         self.width_line = QLineEdit(self)
+        self.width_line.setText(str(self.width))
         self.plms_bool = QCheckBox("Enable plms", self)
-        self.laion_bool = QCheckBox("Enable laion", self)
         self.plms_bool.setCheckState(2 if self.plms is True else 0)
+        self.laion_bool = QCheckBox("Enable laion", self)
+        self.laion_bool.setCheckState(2 if self.laion is True else 0)
 
         self.start_button = QtWidgets.QPushButton(self)
         self.start_button.setText("Start!")
@@ -69,7 +76,7 @@ class MainWindow(QMainWindow):
         self.out_log = QLabel(self.out_dir)
         self.out_log.setFixedWidth(500)
 
-        self.layout.addRow(QLabel("Prompt:"), self.prompt)
+        self.layout.addRow(QLabel("Prompt:"), self.prompt_line)
         self.layout.addRow(QLabel("Seed:"), self.seed_line)
         self.layout.addRow(QLabel("Ddim Steps:"), self.ddim_line)
         self.layout.addRow(QLabel("Height:"), self.height_line)
@@ -121,7 +128,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.widget)
 
     def start(self):
-        generated_string = self.start_command + f' "{str(self.prompt.text())}" '
+        generated_string = self.start_command + f' "{str(self.prompt_line.text())}" '
         if self.plms:
             generated_string += "--plms "
         if self.laion:
