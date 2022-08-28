@@ -7,6 +7,7 @@ import sys
 import logging
 import os
 import subprocess
+import random
 
 class QTextEditLogger(logging.Handler):
     def __init__(self, parent):
@@ -24,10 +25,10 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         
-        self.seed = 27
         self.setBaseSize(1000, 1000)
         self.setWindowTitle("Stable Diffusion GUI")
         self.out_dir = os.path.join(os.getcwd(), "outputs/txt2img-samples")
+        self.seed = random.randint(1,2147483647)
         self.ddim_steps = 50
         self.plms = False
         self.laion = False
