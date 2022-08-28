@@ -69,6 +69,9 @@ class MainWindow(QMainWindow):
         self.laion_bool = QCheckBox("Enable laion", self)
         self.laion_bool.setCheckState(2 if self.laion is True else 0)
 
+        self.new_seed_button = QtWidgets.QPushButton(self)
+        self.new_seed_button.setText("Randomize Seed")
+
         self.start_button = QtWidgets.QPushButton(self)
         self.start_button.setText("Start!")
         self.select_dir_button = QtWidgets.QPushButton(self)
@@ -85,6 +88,7 @@ class MainWindow(QMainWindow):
         self.layout.addRow(QLabel("Current \"outputs\" Directory:"))
         self.layout.addRow(self.out_log)
         self.layout.addRow(self.select_dir_button)
+        self.layout.addRow(self.new_seed_button)
         self.layout.addRow(self.start_button)
 
         self._init_button_slots()
@@ -94,6 +98,7 @@ class MainWindow(QMainWindow):
         self.select_dir_button.clicked.connect(self.sel_dir)
         self.laion_bool.stateChanged.connect(self.laion_func)
         self.plms_bool.stateChanged.connect(self.plms_func)
+        self.new_seed_button.clicked.connect(self.new_seed)
 
     def _init_log(self):
         self.logTextBox = QTextEditLogger(self)
@@ -186,6 +191,10 @@ class MainWindow(QMainWindow):
             self.plms = True
         else:
             self.plms = False
+
+    def new_seed(self):
+        self.seed = random.randint(1, 2147483647)
+        self.seed_line.setText(str(self.seed))
 
 
 if __name__ == '__main__':
