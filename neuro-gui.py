@@ -8,6 +8,7 @@ import logging
 import os
 import subprocess
 import random
+import glob
 
 class QTextEditLogger(logging.Handler):
     def __init__(self, parent):
@@ -153,7 +154,8 @@ class MainWindow(QMainWindow):
 
         generated_string += "--skip_grid --n_samples 1"
         process = subprocess.call(generated_string)
-        last_image = self.out_dir + "/samples/" + os.listdir(self.out_dir + "/samples")[-1]
+        last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
+        last_image = max(last_images, key=os.path.getctime)
         self._set_image(last_image)
 
     def sel_dir(self):
