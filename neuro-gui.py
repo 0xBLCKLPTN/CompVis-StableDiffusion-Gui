@@ -10,26 +10,27 @@ import subprocess
 import random
 import glob
 
+
 class QTextEditLogger(logging.Handler):
     def __init__(self, parent):
         super().__init__()
         self.widget = QtWidgets.QPlainTextEdit(parent)
         self.widget.setFixedWidth(512)
         self.widget.setReadOnly(True)
-        
 
     def emit(self, record):
         msg = self.format(record)
         self.widget.appendPlainText(msg)
 
+
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
-        
+
         self.setBaseSize(1000, 1000)
         self.setWindowTitle("Stable Diffusion GUI")
         self.out_dir = os.path.join(os.getcwd(), "outputs/txt2img-samples")
-        self.seed = random.randint(1,2147483647)
+        self.seed = random.randint(1, 2147483647)
         self.ddim_steps = 50
         self.plms = True
         self.laion = False
@@ -37,17 +38,16 @@ class MainWindow(QMainWindow):
         self.width = 512
         self.start_command = 'python scripts/txt2img.py --prompt'
         self._setMainUi()
-        
-    
+
     def _init_layouts(self):
-        self.widget = QWidget()    
+        self.widget = QWidget()
         self.left_panel = QVBoxLayout()
         self.right_panel = QVBoxLayout()
         self.tree_settings = QHBoxLayout()
         self.layer_hor = QHBoxLayout()
         self.formGroupBox = QGroupBox("Settings")
         self.layout = QFormLayout()
-    
+
     def _set_image(self, image: str = "rickroll.jpg"):
         self.pixmap = QPixmap(image)
         self.label.setPixmap(self.pixmap)
@@ -59,7 +59,7 @@ class MainWindow(QMainWindow):
         self.height_line = QLineEdit(self)
         self.width_line = QLineEdit(self)
         self.plms_bool = QCheckBox("Enable plms", self)
-        self.laion_bool = QCheckBox("Enable laion",self)
+        self.laion_bool = QCheckBox("Enable laion", self)
         self.plms_bool.setCheckState(2 if self.plms is True else 0)
 
         self.start_button = QtWidgets.QPushButton(self)
@@ -74,7 +74,7 @@ class MainWindow(QMainWindow):
         self.layout.addRow(QLabel("Ddim Steps:"), self.ddim_line)
         self.layout.addRow(QLabel("Height:"), self.height_line)
         self.layout.addRow(QLabel("Width:"), self.width_line)
-        self.layout.addRow(self.plms_bool,self.laion_bool)
+        self.layout.addRow(self.plms_bool, self.laion_bool)
         self.layout.addRow(QLabel("Current Out Dir:"))
         self.layout.addRow(self.out_log)
         self.layout.addRow(self.select_dir_button)
@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
         self.logTextBox.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
         logging.getLogger().addHandler(self.logTextBox)
         logging.getLogger().setLevel(logging.DEBUG)
-    
+
     def _init_left_panel(self):
         self.label = QLabel(self)
         self._set_image()
@@ -126,13 +126,13 @@ class MainWindow(QMainWindow):
             generated_string += "--plms "
         if self.laion:
             generated_string += "--laion400m "
-        
+
         if self.seed_line.text() != "":
             generated_string += "--seed " + str(self.seed_line.text()) + " "
 
         if self.seed_line.text() == "":
             generated_string += "--seed " + str(self.seed) + " "
-        
+
         if self.height_line.text() == "":
             generated_string += f"--H {str(self.height)} "
         if self.width_line.text() == "":
@@ -168,7 +168,7 @@ class MainWindow(QMainWindow):
             self.laion = True
         else:
             self.laion = False
-    
+
     def plms_func(self, state):
         if state == QtCore.Qt.Checked:
             self.plms = True
