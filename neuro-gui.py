@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         self.out_dir = os.path.join(os.getcwd(), "outputs/txt2img-samples")
         self.seed = random.randint(1,2147483647)
         self.ddim_steps = 50
-        self.plms = False
+        self.plms = True
         self.laion = False
         self.height = 512
         self.width = 512
@@ -59,6 +59,7 @@ class MainWindow(QMainWindow):
         self.width_line = QLineEdit(self)
         self.plms_bool = QCheckBox("Enable plms", self)
         self.laion_bool = QCheckBox("Enable laion",self)
+        self.plms_bool.setCheckState(2 if self.plms is True else 0)
 
         self.start_button = QtWidgets.QPushButton(self)
         self.start_button.setText("Start!")
