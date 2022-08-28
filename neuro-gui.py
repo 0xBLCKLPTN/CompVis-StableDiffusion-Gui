@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
 
         self.setBaseSize(1000, 1000)
         self.setWindowTitle("Stable Diffusion GUI")
-        self.out_dir = os.path.join(os.getcwd(), "outputs/txt2img-samples")
+        self.out_dir = os.path.join(os.getcwd(), "outputs")
         self.seed = random.randint(1, 2147483647)
         self.ddim_steps = 50
         self.plms = True
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         self.start_button = QtWidgets.QPushButton(self)
         self.start_button.setText("Start!")
         self.select_dir_button = QtWidgets.QPushButton(self)
-        self.select_dir_button.setText("Select Output Directory")
+        self.select_dir_button.setText("Select \"outputs\" Directory")
         self.out_log = QLabel(self.out_dir)
         self.out_log.setFixedWidth(500)
 
@@ -75,7 +75,7 @@ class MainWindow(QMainWindow):
         self.layout.addRow(QLabel("Height:"), self.height_line)
         self.layout.addRow(QLabel("Width:"), self.width_line)
         self.layout.addRow(self.plms_bool, self.laion_bool)
-        self.layout.addRow(QLabel("Current Out Dir:"))
+        self.layout.addRow(QLabel("Current \"outputs\" Directory:"))
         self.layout.addRow(self.out_log)
         self.layout.addRow(self.select_dir_button)
         self.layout.addRow(self.start_button)
@@ -148,8 +148,10 @@ class MainWindow(QMainWindow):
         if self.ddim_line.text() == "":
             generated_string += f"--ddim_steps {str(self.ddim_steps)} "
 
-        if self.out_dir != "outputs/samples":
-            generated_string += f"--outdir {self.out_dir} "
+        if os.path.exists(os.path.join(self.out_dir, "txt2img-samples")):
+           self.out_dir = os.path.join(self.out_dir, "txt2img-samples")
+
+        generated_string += f"--outdir {self.out_dir} "
 
         logging.debug(generated_string)
 
