@@ -2,7 +2,7 @@
 <div align = "center">
   <h1>CompVis-StableDiffusion-Gui</h1>
   <p>Simple GUI for https://github.com/CompVis/stable-diffusion using pyqt5</p>
-  <img src="https://github.com/blcklptn/CompVis-StableDiffusion-Gui/blob/main/screenshot.png")
+  <img src="https://github.com/blcklptn/CompVis-StableDiffusion-Gui/blob/settings-save/screenshot.png")
 </div>
 
 
