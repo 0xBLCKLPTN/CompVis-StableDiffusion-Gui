@@ -149,7 +149,7 @@ class MainWindow(QMainWindow):
         self.process = QtCore.QProcess(self)
         self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         self.process.readyReadStandardOutput.connect(self.on_readyReadStandardOutput)
-        self.process.start("ping 8.8.8.8")
+        self.process.start(generated_command)
     
     @QtCore.pyqtSlot()
     def on_readyReadStandardOutput(self):
@@ -214,7 +214,6 @@ class MainWindow(QMainWindow):
 
     def import_settings(self):
         tmp = self.out_dir
-        #self.sett = str(QFileDialog.getOpenFileNames(self, "Select \"outputs\" Directory"))
         response = QFileDialog.getOpenFileNames(
             parent=self,
             caption='Select a data file',
