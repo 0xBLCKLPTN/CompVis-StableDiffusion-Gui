@@ -10,6 +10,7 @@ import random
 import glob
 import json
 
+# Log window
 class QTextEditLogger(logging.Handler):
     def __init__(self, parent):
         super().__init__()
@@ -26,6 +27,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
+        # Default variables
         self.prompt="a photograph of an astronaut riding a horse"
         self.setBaseSize(1000, 1000)
         self.setWindowTitle("Stable Diffusion GUI")
@@ -37,9 +39,10 @@ class MainWindow(QMainWindow):
         self.height = 512
         self.width = 640
         self.start_command = 'python3 scripts/txt2img.py --prompt'
-        self._setMainUi()
+        self._setMainUi() # setting up ui
 
     def _init_layouts(self):
+        # Initialize all layouts
         self.widget = QWidget()
         self.left_panel = QVBoxLayout()
         self.right_panel = QVBoxLayout()
@@ -49,10 +52,12 @@ class MainWindow(QMainWindow):
         self.layout = QFormLayout()
 
     def _set_image(self, image: str = "rickroll.jpg"):
+        # Set default/generated image
         self.pixmap = QPixmap(image)
         self.label.setPixmap(self.pixmap)
 
     def _init_settings(self):
+        # Initializing all elements
         self.prompt_line = QLineEdit(self)
         self.prompt_line.setText(self.prompt)
         self.seed_line = QLineEdit(self)
@@ -82,9 +87,10 @@ class MainWindow(QMainWindow):
 
         self.select_dir_button = QtWidgets.QPushButton(self)
         self.select_dir_button.setText("Select \"outputs\" Directory")
+
         self.out_log = QLabel(self.out_dir)
         self.out_log.setFixedWidth(500)
-
+        # Adds all elements to right layout
         self.layout.addRow(QLabel("Prompt:"), self.prompt_line)
         self.layout.addRow(QLabel("Seed:"), self.seed_line)
         self.layout.addRow(QLabel("Ddim Steps:"), self.ddim_line)
@@ -101,6 +107,7 @@ class MainWindow(QMainWindow):
         self._init_button_slots()
 
     def _init_button_slots(self):
+        # Initialize buttons and checkboxs
         self.start_button.clicked.connect(self.start)
         self.select_dir_button.clicked.connect(self.sel_dir)
         self.laion_bool.stateChanged.connect(self.laion_func)
@@ -110,12 +117,14 @@ class MainWindow(QMainWindow):
         self.import_settings_button.clicked.connect(self.import_settings)
 
     def _init_log(self):
+        # Log window
         self.logTextBox = QTextEditLogger(self)
         self.logTextBox.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
         logging.getLogger().addHandler(self.logTextBox)
         logging.getLogger().setLevel(logging.DEBUG)
 
     def _init_left_panel(self):
+        # Image and debug window
         self.label = QLabel(self)
         self._set_image()
         self._init_log()
@@ -157,6 +166,7 @@ class MainWindow(QMainWindow):
         logging.info(text)
 
     def start(self):
+        # generating command via variables
         generated_string = self.start_command + f' "{str(self.prompt_line.text())}" '
         if self.plms:
             generated_string += "--plms "
@@ -188,12 +198,14 @@ class MainWindow(QMainWindow):
            self.out_dir = os.path.join(self.out_dir, "txt2img-samples")
 
         generated_string += f"--outdir {self.out_dir} "
-
-        logging.debug(generated_string)
-
         generated_string += "--skip_grid --n_samples 1 --n_iter 1"
-        self._startImGenProcess(generated_string)
 
+        logging.debug(generated_string)  # output generated_string to debug window
+
+        
+        self._startImGenProcess(generated_string)  # Starting image generator
+
+        # setting up generated image.
         last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
         last_image = max(last_images, key=os.path.getctime)
 
@@ -243,9 +255,6 @@ class MainWindow(QMainWindow):
                 self.plms = False
                 self.plms_bool.setChecked(False)
             
-
-
-            #self.plms_line.setText = data["plms_enabled"])
             self.height_line.setText(str(data["height"]))
             self.width_line.setText(str(data["width"]))
 
