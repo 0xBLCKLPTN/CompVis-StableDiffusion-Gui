@@ -1,9 +1,9 @@
+# About
+This program is an add-on to the [image generator](https://github.com/CompVis/stable-diffusion) using PyQt5. You can copy generate an image to the clipboard, export and import neural network settings. 
 
-<div align = "center">
-  <h1>CompVis-StableDiffusion-Gui</h1>
-  <p>Simple GUI for https://github.com/CompVis/stable-diffusion using pyqt5</p>
-  <img src="https://github.com/blcklptn/CompVis-StableDiffusion-Gui/blob/settings-save/screenshot_update.png")
-</div>
+![alt text](https://github.com/blcklptn/CompVis-StableDiffusion-Gui/blob/main/screenshot_update.png)
+
+
 
 
 ## Install:
