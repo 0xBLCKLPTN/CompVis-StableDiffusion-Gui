@@ -6,10 +6,8 @@ import time
 import sys
 import logging
 import os
-import subprocess
 import random
 import glob
-
 
 class QTextEditLogger(logging.Handler):
     def __init__(self, parent):
@@ -37,7 +35,7 @@ class MainWindow(QMainWindow):
         self.laion = False
         self.height = 512
         self.width = 640
-        self.start_command = 'python scripts/txt2img.py --prompt'
+        self.start_command = 'python3 scripts/txt2img.py --prompt'
         self._setMainUi()
 
     def _init_layouts(self):
@@ -132,6 +130,21 @@ class MainWindow(QMainWindow):
         self.widget.setLayout(self.layer_hor)
         self.setCentralWidget(self.widget)
 
+    def log_subprocess_output(self, pipe):
+        for line in iter(pipe.readline, b''): # b'\n'-separated lines
+            logging.info('got line from subprocess: %r', line)
+
+    def _startImGenProcess(self, generated_command: str ):
+        self.process = QtCore.QProcess(self)
+        self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+        self.process.readyReadStandardOutput.connect(self.on_readyReadStandardOutput)
+        self.process.start("ping 8.8.8.8")
+    
+    @QtCore.pyqtSlot()
+    def on_readyReadStandardOutput(self):
+        text = self.process.readAllStandardOutput().data().decode()
+        logging.info(text)
+
     def start(self):
         generated_string = self.start_command + f' "{str(self.prompt_line.text())}" '
         if self.plms:
@@ -168,9 +181,15 @@ class MainWindow(QMainWindow):
         logging.debug(generated_string)
 
         generated_string += "--skip_grid --n_samples 1 --n_iter 1"
-        process = subprocess.run(generated_string, shell=True)
+        self._startImGenProcess(generated_string)
+        """
+        im_gen_thread = threading.Thread(target=self._startImGenProcess, args=(generated_string,))
+        im_gen_thread.start()
+        im_gen_thread.join()
+        """
         last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
         last_image = max(last_images, key=os.path.getctime)
+
         self._set_image(last_image)
 
     def sel_dir(self):
