@@ -38,6 +38,7 @@ class MainWindow(QMainWindow):
         self.laion = False
         self.height = 512
         self.width = 640
+        self.last_image = "rickroll.jpg"
         self.start_command = 'python3 scripts/txt2img.py --prompt'
         self._setMainUi() # setting up ui
 
@@ -87,6 +88,9 @@ class MainWindow(QMainWindow):
 
         self.select_dir_button = QtWidgets.QPushButton(self)
         self.select_dir_button.setText("Select \"outputs\" Directory")
+        
+        self.clipboard_button = QtWidgets.QPushButton(self)
+        self.clipboard_button.setText("Copy genrated image to clipboard")
 
         self.out_log = QLabel(self.out_dir)
         self.out_log.setFixedWidth(500)
@@ -103,7 +107,7 @@ class MainWindow(QMainWindow):
         self.layout.addRow(self.new_seed_button)
         self.layout.addRow(self.start_button)
         self.layout.addRow(self.save_settings_button, self.import_settings_button)
-
+        self.layout.addRow(self.clipboard_button)
         self._init_button_slots()
 
     def _init_button_slots(self):
@@ -115,6 +119,7 @@ class MainWindow(QMainWindow):
         self.new_seed_button.clicked.connect(self.new_seed)
         self.save_settings_button.clicked.connect(self.save_settings)
         self.import_settings_button.clicked.connect(self.import_settings)
+        self.clipboard_button.clicked.connect(self.to_clipboard)
 
     def _init_log(self):
         # Log window
@@ -207,9 +212,9 @@ class MainWindow(QMainWindow):
 
         # setting up generated image.
         last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
-        last_image = max(last_images, key=os.path.getctime)
+        self.last_image = max(last_images, key=os.path.getctime)
 
-        self._set_image(last_image)
+        self._set_image(self.last_image)
 
     def sel_dir(self):
         tmp = self.out_dir
@@ -223,6 +228,10 @@ class MainWindow(QMainWindow):
             self.laion = True
         else:
             self.laion = False
+
+    def to_clipboard(self):
+        if self.last_image != "":
+            QApplication.clipboard().setImage(QImage(self.last_image))
 
     def import_settings(self):
         tmp = self.out_dir
