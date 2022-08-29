@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         self.plms = True
         self.laion = False
         self.height = 512
-        self.width = 512
+        self.width = 640
         self.start_command = 'python scripts/txt2img.py --prompt'
         self._setMainUi()
 
