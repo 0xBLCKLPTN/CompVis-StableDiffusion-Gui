@@ -6,10 +6,9 @@ import time
 import sys
 import logging
 import os
-import subprocess
 import random
 import glob
-
+import json
 
 class QTextEditLogger(logging.Handler):
     def __init__(self, parent):
@@ -37,7 +36,7 @@ class MainWindow(QMainWindow):
         self.laion = False
         self.height = 512
         self.width = 640
-        self.start_command = 'python scripts/txt2img.py --prompt'
+        self.start_command = 'python3 scripts/txt2img.py --prompt'
         self._setMainUi()
 
     def _init_layouts(self):
@@ -74,6 +73,13 @@ class MainWindow(QMainWindow):
 
         self.start_button = QtWidgets.QPushButton(self)
         self.start_button.setText("Start!")
+
+        self.save_settings_button = QtWidgets.QPushButton(self)
+        self.save_settings_button.setText("Save settings")
+
+        self.import_settings_button = QtWidgets.QPushButton(self)
+        self.import_settings_button.setText("Import settings")
+
         self.select_dir_button = QtWidgets.QPushButton(self)
         self.select_dir_button.setText("Select \"outputs\" Directory")
         self.out_log = QLabel(self.out_dir)
@@ -90,6 +96,7 @@ class MainWindow(QMainWindow):
         self.layout.addRow(self.select_dir_button)
         self.layout.addRow(self.new_seed_button)
         self.layout.addRow(self.start_button)
+        self.layout.addRow(self.save_settings_button, self.import_settings_button)
 
         self._init_button_slots()
 
@@ -99,6 +106,8 @@ class MainWindow(QMainWindow):
         self.laion_bool.stateChanged.connect(self.laion_func)
         self.plms_bool.stateChanged.connect(self.plms_func)
         self.new_seed_button.clicked.connect(self.new_seed)
+        self.save_settings_button.clicked.connect(self.save_settings)
+        self.import_settings_button.clicked.connect(self.import_settings)
 
     def _init_log(self):
         self.logTextBox = QTextEditLogger(self)
@@ -131,6 +140,21 @@ class MainWindow(QMainWindow):
 
         self.widget.setLayout(self.layer_hor)
         self.setCentralWidget(self.widget)
+
+    def log_subprocess_output(self, pipe):
+        for line in iter(pipe.readline, b''): # b'\n'-separated lines
+            logging.info('got line from subprocess: %r', line)
+
+    def _startImGenProcess(self, generated_command: str ):
+        self.process = QtCore.QProcess(self)
+        self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+        self.process.readyReadStandardOutput.connect(self.on_readyReadStandardOutput)
+        self.process.start("ping 8.8.8.8")
+    
+    @QtCore.pyqtSlot()
+    def on_readyReadStandardOutput(self):
+        text = self.process.readAllStandardOutput().data().decode()
+        logging.info(text)
 
     def start(self):
         generated_string = self.start_command + f' "{str(self.prompt_line.text())}" '
@@ -168,9 +192,11 @@ class MainWindow(QMainWindow):
         logging.debug(generated_string)
 
         generated_string += "--skip_grid --n_samples 1 --n_iter 1"
-        process = subprocess.run(generated_string, shell=True)
+        self._startImGenProcess(generated_string)
+
         last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
         last_image = max(last_images, key=os.path.getctime)
+
         self._set_image(last_image)
 
     def sel_dir(self):
@@ -185,6 +211,58 @@ class MainWindow(QMainWindow):
             self.laion = True
         else:
             self.laion = False
+
+    def import_settings(self):
+        tmp = self.out_dir
+        #self.sett = str(QFileDialog.getOpenFileNames(self, "Select \"outputs\" Directory"))
+        response = QFileDialog.getOpenFileNames(
+            parent=self,
+            caption='Select a data file',
+            directory=os.getcwd(),
+            filter="Json File (*.json)",
+            initialFilter='Json File (*.json)'
+        )
+        print(response[0])
+        with open(response[0][0]) as json_file:
+            data = json.load(json_file)
+        
+            # Print the type of data variable
+            print("Type:", type(data))
+            self.seed_line.setText(str(data["seed"]))
+            self.ddim_line.setText(str(data["ddim_steps"]))
+            if data["laion_enabled"] == True:
+                self.laion = True
+                self.laion_bool.setChecked(True)
+            if data["laion_enabled"] == False:
+                self.laion = False
+                self.laion_bool.setChecked(False)
+            
+            if data["plms_enabled"] == True:
+                self.plms = True
+                self.plms_bool.setChecked(True)
+            if data["plms_enabled"] == False:
+                self.plms = False
+                self.plms_bool.setChecked(False)
+            
+
+
+            #self.plms_line.setText = data["plms_enabled"])
+            self.height_line.setText(str(data["height"]))
+            self.width_line.setText(str(data["width"]))
+
+    def save_settings(self):
+        res: dict = {"seed": self.seed,
+                     "plms_enabled": self.plms,
+                     "ddim_steps": self.ddim_steps,
+                     "laion_enabled": self.laion,
+                     "height": self.height,
+                     "width": self.width,
+                    }
+
+        with open("settings.json", "w") as outfile:
+            json.dump(res, outfile)
+        logging.info("Settings saved!")
+        print(res)
 
     def plms_func(self, state):
         if state == QtCore.Qt.Checked:
