@@ -248,10 +248,7 @@ class MainWindow(QMainWindow):
         self.out_log.setText(self.out_dir)
 
     def laion_func(self, state):
-        if state == QtCore.Qt.Checked:
-            self.laion = True
-        else:
-            self.laion = False
+        self.laion = state == QtCore.Qt.Checked
 
     def to_clipboard(self):
         if self.last_image != "":
@@ -307,10 +304,7 @@ class MainWindow(QMainWindow):
         print(res)
 
     def plms_func(self, state):
-        if state == QtCore.Qt.Checked:
-            self.plms = True
-        else:
-            self.plms = False
+        self.plms = state == QtCore.Qt.Checked
 
     def new_seed(self):
         self.seed = random.randint(1, 2147483647)
