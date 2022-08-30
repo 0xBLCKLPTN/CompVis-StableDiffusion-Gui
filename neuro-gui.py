@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
         self.ddim_steps = 50
         self.plms = True
         self.laion = False
+        self.random_seed = True
         self.height = 512
         self.width = 640
         self.last_image = "rickroll.jpg"
@@ -83,6 +84,7 @@ class MainWindow(QMainWindow):
 
         self.plms_bool = QCheckBox("Enable plms", self)
         self.laion_bool = QCheckBox("Enable laion", self)
+        self.random_seed_bool = QCheckBox("Random seed every time", self)
 
         self.new_seed_button = QtWidgets.QPushButton(self)
         self.new_seed_button.setText("Randomize Seed")
@@ -111,6 +113,7 @@ class MainWindow(QMainWindow):
         self.layout.addRow(QLabel("Height:"), self.height_line)
         self.layout.addRow(QLabel("Width:"), self.width_line)
         self.layout.addRow(self.plms_bool, self.laion_bool)
+        self.layout.addRow(self.random_seed_bool)
         self.layout.addRow(QLabel("Current \"outputs\" Directory:"))
         self.layout.addRow(self.out_log)
         self.layout.addRow(self.select_dir_button)
@@ -129,6 +132,7 @@ class MainWindow(QMainWindow):
         self.width_line.setText(str(self.width))
         self.plms_bool.setCheckState(2 if self.plms is True else 0)
         self.laion_bool.setCheckState(2 if self.laion is True else 0)
+        self.random_seed_bool.setCheckState(2 if self.random_seed is True else 0)
         self.out_log.setText(self.out_dir)
 
     def _init_button_slots(self):
@@ -137,6 +141,7 @@ class MainWindow(QMainWindow):
         self.select_dir_button.clicked.connect(self.sel_dir)
         self.laion_bool.stateChanged.connect(self.laion_func)
         self.plms_bool.stateChanged.connect(self.plms_func)
+        self.random_seed_bool.stateChanged.connect(self.random_seed_func)
         self.new_seed_button.clicked.connect(self.new_seed)
         self.save_settings_button.clicked.connect(self.save_settings)
         self.import_settings_button.clicked.connect(self.find_import_settings)
@@ -202,6 +207,8 @@ class MainWindow(QMainWindow):
         logging.info(text)
 
     def start(self):
+        if self.random_seed:
+            self.new_seed()
         # generating command via variables
         generated_string = self.start_command + f' "{str(self.prompt_line.toPlainText())}" '
         if self.plms:
@@ -250,6 +257,9 @@ class MainWindow(QMainWindow):
     def laion_func(self, state):
         self.laion = state == QtCore.Qt.Checked
 
+    def random_seed_func(self, state):
+        self.random_seed = state == QtCore.Qt.Checked
+
     def to_clipboard(self):
         if self.last_image != "":
             QApplication.clipboard().setImage(QImage(self.last_image))
@@ -278,6 +288,7 @@ class MainWindow(QMainWindow):
                 self.ddim_steps = int(data["ddim_steps"])
                 self.laion = data["laion_enabled"] is True
                 self.plms = data["plms_enabled"] is True
+                self.random_seed = data["random_seed_enabled"] is True
                 self.height = int(data["height"])
                 self.width = int(data["width"])
                 self.prompt = str(data["prompt"])
@@ -296,6 +307,7 @@ class MainWindow(QMainWindow):
                      "width": int(self.width_line.text()),
                      "prompt": self.prompt_line.toPlainText(),
                      "outputs_dir": self.out_log.text(),
+                     "random_seed_enabled": self.random_seed,
                      }
 
         with open(self.default_setting_path, "w") as outfile:
