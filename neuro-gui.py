@@ -15,7 +15,6 @@ class QTextEditLogger(logging.Handler):
     def __init__(self, parent):
         super().__init__()
         self.widget = QtWidgets.QPlainTextEdit(parent)
-        self.widget.setFixedWidth(512)
         self.widget.setReadOnly(True)
 
     def emit(self, record):
