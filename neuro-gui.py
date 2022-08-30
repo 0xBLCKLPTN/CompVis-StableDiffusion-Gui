@@ -102,6 +102,7 @@ class MainWindow(QMainWindow):
 
         self.start_button = QtWidgets.QPushButton(self)
         self.start_button.setText("Start!")
+        self.start_button.setStyleSheet("background-color: lightgreen")
 
         self.save_settings_button = QtWidgets.QPushButton(self)
         self.save_settings_button.setText("Save Settings")
