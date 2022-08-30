@@ -180,6 +180,7 @@ class MainWindow(QMainWindow):
             logging.info('got line from subprocess: %r', line)
 
     def _startImGenProcess(self, generated_command: str):
+        self.start_button.setEnabled(False)
         self.process = QtCore.QProcess(self)
         self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         self.process.readyReadStandardOutput.connect(self.on_readyReadStandardOutput)
@@ -192,6 +193,7 @@ class MainWindow(QMainWindow):
         last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
         self.last_image = max(last_images, key=os.path.getctime)
         self._set_image(self.last_image)
+        self.start_button.setEnabled(True)
 
     @QtCore.pyqtSlot()
     def on_readyReadStandardOutput(self):
