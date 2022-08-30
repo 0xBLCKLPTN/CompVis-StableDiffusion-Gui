@@ -179,12 +179,20 @@ class MainWindow(QMainWindow):
         for line in iter(pipe.readline, b''): # b'\n'-separated lines
             logging.info('got line from subprocess: %r', line)
 
-    def _startImGenProcess(self, generated_command: str ):
+    def _startImGenProcess(self, generated_command: str):
         self.process = QtCore.QProcess(self)
         self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         self.process.readyReadStandardOutput.connect(self.on_readyReadStandardOutput)
+        self.process.finished.connect(self.process_done)
         self.process.start(generated_command)
-    
+
+    def process_done(self):
+        # look for the new image
+        # setting up generated image.
+        last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
+        self.last_image = max(last_images, key=os.path.getctime)
+        self._set_image(self.last_image)
+
     @QtCore.pyqtSlot()
     def on_readyReadStandardOutput(self):
         text = self.process.readAllStandardOutput().data().decode()
@@ -229,12 +237,6 @@ class MainWindow(QMainWindow):
 
         
         self._startImGenProcess(generated_string)  # Starting image generator
-
-        # setting up generated image.
-        last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
-        self.last_image = max(last_images, key=os.path.getctime)
-
-        self._set_image(self.last_image)
 
     def sel_dir(self):
         tmp = self.out_dir
