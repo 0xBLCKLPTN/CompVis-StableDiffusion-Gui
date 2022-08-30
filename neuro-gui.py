@@ -68,27 +68,20 @@ class MainWindow(QMainWindow):
     def _init_settings(self):
         # Initializing all elements
         intreg = QRegExp("\\d+")
-        self.prompt_line = QLineEdit(self)
-        self.prompt_line.setText(self.prompt)
         self.prompt_line = QPlainTextEdit(self)
         self.seed_line = QLineEdit(self)
         self.seed_line.setValidator(QRegExpValidator(intreg))
-        self.seed_line.setText(str(self.seed))
         self.ddim_line = QLineEdit(self)
-        self.ddim_line.setText(str(self.ddim_steps))
         self.ddim_line.setValidator(QRegExpValidator(intreg))
         self.height_line = QLineEdit(self)
-        self.height_line.setText(str(self.height))
         self.height_line.setValidator(QRegExpValidator(intreg))
         self.height_line.editingFinished.connect(self.make_divisible_by_64)
         self.width_line = QLineEdit(self)
-        self.width_line.setText(str(self.width))
         self.width_line.setValidator(QRegExpValidator(intreg))
         self.width_line.editingFinished.connect(self.make_divisible_by_64)
+
         self.plms_bool = QCheckBox("Enable plms", self)
-        self.plms_bool.setCheckState(2 if self.plms is True else 0)
         self.laion_bool = QCheckBox("Enable laion", self)
-        self.laion_bool.setCheckState(2 if self.laion is True else 0)
 
         self.new_seed_button = QtWidgets.QPushButton(self)
         self.new_seed_button.setText("Randomize Seed")
@@ -125,6 +118,17 @@ class MainWindow(QMainWindow):
         self.layout.addRow(self.clipboard_button)
         self.layout.addRow(self.start_button)
         self._init_button_slots()
+        self.update_form()
+
+    def update_form(self):
+        self.prompt_line.setPlainText(self.prompt)
+        self.seed_line.setText(str(self.seed))
+        self.ddim_line.setText(str(self.ddim_steps))
+        self.height_line.setText(str(self.height))
+        self.width_line.setText(str(self.width))
+        self.plms_bool.setCheckState(2 if self.plms is True else 0)
+        self.laion_bool.setCheckState(2 if self.laion is True else 0)
+        self.out_log.setText(self.out_dir)
 
     def _init_button_slots(self):
         # Initialize buttons and checkboxs
@@ -188,7 +192,7 @@ class MainWindow(QMainWindow):
 
     def start(self):
         # generating command via variables
-        generated_string = self.start_command + f' "{str(self.prompt_line.text())}" '
+        generated_string = self.start_command + f' "{str(self.prompt_line.toPlainText())}" '
         if self.plms:
             generated_string += "--plms "
         if self.laion:
