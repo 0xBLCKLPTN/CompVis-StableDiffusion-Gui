@@ -20,6 +20,7 @@ class QTextEditLogger(logging.Handler):
     def emit(self, record):
         msg = self.format(record)
         self.widget.appendPlainText(msg)
+        self.widget.moveCursor(QtGui.QTextCursor.End)
 
 
 class MainWindow(QMainWindow):
