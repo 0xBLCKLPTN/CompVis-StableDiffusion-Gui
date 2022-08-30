@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
         self.laion = False
         self.random_seed = True
         self.height = 512
-        self.width = 640
+        self.width = 512
         self.last_image = "rickroll.jpg"
         self.start_command = 'python3 scripts/txt2img.py --prompt'
         self._setMainUi()  # setting up ui
