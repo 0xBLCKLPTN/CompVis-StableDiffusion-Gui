@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
         self.select_dir_button.setText("Select \"outputs\" Directory…")
 
         self.clipboard_button = QtWidgets.QPushButton(self)
-        self.clipboard_button.setText("Copy Image to clipboard")
+        self.clipboard_button.setText("Copy Image to Clipboard")
 
         self.out_log = QLabel(self.out_dir)
         self.out_log.setFixedWidth(500)
