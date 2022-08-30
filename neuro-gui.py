@@ -113,7 +113,7 @@ class MainWindow(QMainWindow):
         self.clipboard_button.setText("Copy Image to Clipboard")
 
         self.out_log = QLabel(self.out_dir)
-        self.out_log.setFixedWidth(500)
+        self.out_log.setMinimumWidth(500)
         # Adds all elements to right layout
         self.layout.addRow(QLabel("Prompt:"), self.prompt_line)
         self.layout.addRow(QLabel("Seed:"), self.seed_line)
