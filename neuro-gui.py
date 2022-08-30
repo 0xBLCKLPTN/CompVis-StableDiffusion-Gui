@@ -200,11 +200,15 @@ class MainWindow(QMainWindow):
 
     def _startImGenProcess(self, generated_command: str):
         self.start_button.setEnabled(False)
-        self.process = QtCore.QProcess(self)
-        self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
-        self.process.readyReadStandardOutput.connect(self.on_readyReadStandardOutput)
-        self.process.finished.connect(self.process_done)
-        self.process.start(generated_command)
+        try:
+            self.process = QtCore.QProcess(self)
+            self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+            self.process.readyReadStandardOutput.connect(self.on_readyReadStandardOutput)
+            self.process.finished.connect(self.process_done)
+            self.process.start(generated_command)
+        except:
+            logging.debug(f"Error doing:\n {generated_command}!")
+            self.start_button.setEnabled(True)
 
     def process_done(self):
         # look for the new image
@@ -318,8 +322,10 @@ class MainWindow(QMainWindow):
                 self.out_dir = str(data["outputs_dir"])
                 self.update_form()
         except:
+            message = 'Error reading settings file. Probably old. Delete it and try again'
+            logging.debug(message)
             err = QtWidgets.QErrorMessage(self)
-            err.showMessage('Error reading settings file. Probably old. Delete it and try again')
+            err.showMessage(message)
 
     def save_settings(self):
         res: dict = {"seed": self.seed_line.text(),
