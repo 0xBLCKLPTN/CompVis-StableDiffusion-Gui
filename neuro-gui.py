@@ -107,7 +107,7 @@ class MainWindow(QMainWindow):
         self.import_settings_button.setText("Import Settings…")
 
         self.select_dir_button = QtWidgets.QPushButton(self)
-        self.select_dir_button.setText("Select \"outputs\" Directory…")
+        self.select_dir_button.setText("Select \"outputs\" Folder…")
 
         self.clipboard_button = QtWidgets.QPushButton(self)
         self.clipboard_button.setText("Copy Image to Clipboard")
@@ -122,7 +122,7 @@ class MainWindow(QMainWindow):
         self.layout.addRow(QLabel("Width:"), self.width_line)
         self.layout.addRow(self.plms_bool, self.laion_bool)
         self.layout.addRow(self.random_seed_bool)
-        self.layout.addRow(QLabel("Current \"outputs\" Directory:"))
+        self.layout.addRow(QLabel("Current \"outputs\" Folder:"))
         self.layout.addRow(self.out_log)
         self.layout.addRow(self.select_dir_button)
         self.layout.addRow(self.save_settings_button, self.import_settings_button)
