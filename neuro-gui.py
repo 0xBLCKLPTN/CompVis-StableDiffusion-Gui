@@ -93,13 +93,13 @@ class MainWindow(QMainWindow):
         self.start_button.setText("Start!")
 
         self.save_settings_button = QtWidgets.QPushButton(self)
-        self.save_settings_button.setText("Save settings")
+        self.save_settings_button.setText("Save Settings")
 
         self.import_settings_button = QtWidgets.QPushButton(self)
-        self.import_settings_button.setText("Import settings")
+        self.import_settings_button.setText("Import Settings…")
 
         self.select_dir_button = QtWidgets.QPushButton(self)
-        self.select_dir_button.setText("Select \"outputs\" Directory")
+        self.select_dir_button.setText("Select \"outputs\" Directory…")
 
         self.clipboard_button = QtWidgets.QPushButton(self)
         self.clipboard_button.setText("Copy Image to clipboard")
