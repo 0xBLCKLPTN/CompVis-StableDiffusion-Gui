@@ -41,6 +41,9 @@ class MainWindow(QMainWindow):
         self.last_image = "rickroll.jpg"
         self.start_command = 'python3 scripts/txt2img.py --prompt'
         self._setMainUi() # setting up ui
+        self.default_setting_path = "settings.json"
+        if os.path.exists(self.default_setting_path):
+            self.import_settings(self.default_setting_path)
 
     def _init_layouts(self):
         # Initialize all layouts
@@ -289,7 +292,7 @@ class MainWindow(QMainWindow):
                      "width": self.width,
                     }
 
-        with open("settings.json", "w") as outfile:
+        with open(self.default_setting_path, "w") as outfile:
             json.dump(res, outfile)
         logging.info("Settings saved!")
         print(res)
