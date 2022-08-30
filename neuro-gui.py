@@ -307,7 +307,7 @@ class MainWindow(QMainWindow):
         self.plms = state == QtCore.Qt.Checked
 
     def new_seed(self):
-        self.seed = random.randint(1, 2147483647)
+        self.seed = random.randint(-2147483648, 2147483647)
         self.seed_line.setText(str(self.seed))
 
 
