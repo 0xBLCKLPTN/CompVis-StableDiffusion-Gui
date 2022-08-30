@@ -57,18 +57,31 @@ class MainWindow(QMainWindow):
         self.pixmap = QPixmap(image)
         self.label.setPixmap(self.pixmap)
 
+    def make_divisible_by_64(self):
+        # round down to nearest divisible by 64.  This is for convenience-- 0 is still possible, 64 etc.
+        self.height_line.setText(str(int(self.height_line.text()) - int(self.height_line.text()) % 64))
+        self.width_line.setText(str(int(self.width_line.text()) - int(self.width_line.text()) % 64))
+
     def _init_settings(self):
         # Initializing all elements
+        intreg = QRegExp("\\d+")
         self.prompt_line = QLineEdit(self)
         self.prompt_line.setText(self.prompt)
+        self.prompt_line = QPlainTextEdit(self)
         self.seed_line = QLineEdit(self)
+        self.seed_line.setValidator(QRegExpValidator(intreg))
         self.seed_line.setText(str(self.seed))
         self.ddim_line = QLineEdit(self)
         self.ddim_line.setText(str(self.ddim_steps))
+        self.ddim_line.setValidator(QRegExpValidator(intreg))
         self.height_line = QLineEdit(self)
         self.height_line.setText(str(self.height))
+        self.height_line.setValidator(QRegExpValidator(intreg))
+        self.height_line.editingFinished.connect(self.make_divisible_by_64)
         self.width_line = QLineEdit(self)
         self.width_line.setText(str(self.width))
+        self.width_line.setValidator(QRegExpValidator(intreg))
+        self.width_line.editingFinished.connect(self.make_divisible_by_64)
         self.plms_bool = QCheckBox("Enable plms", self)
         self.plms_bool.setCheckState(2 if self.plms is True else 0)
         self.laion_bool = QCheckBox("Enable laion", self)
