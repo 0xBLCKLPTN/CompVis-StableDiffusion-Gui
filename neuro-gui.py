@@ -9,6 +9,7 @@ import random
 import glob
 import json
 
+
 # Log window
 class QTextEditLogger(logging.Handler):
     def __init__(self, parent):
@@ -28,7 +29,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         # Default variables
-        self.prompt="a photograph of an astronaut riding a horse"
+        self.prompt = "a photograph of an astronaut riding a horse"
         self.setBaseSize(1000, 1000)
         self.setWindowTitle("Stable Diffusion GUI")
         self.out_dir = os.path.join(os.getcwd(), "outputs")
@@ -40,7 +41,7 @@ class MainWindow(QMainWindow):
         self.width = 640
         self.last_image = "rickroll.jpg"
         self.start_command = 'python3 scripts/txt2img.py --prompt'
-        self._setMainUi() # setting up ui
+        self._setMainUi()  # setting up ui
         self.default_setting_path = "settings.json"
         if os.path.exists(self.default_setting_path):
             self.import_settings(self.default_setting_path)
@@ -97,7 +98,7 @@ class MainWindow(QMainWindow):
 
         self.select_dir_button = QtWidgets.QPushButton(self)
         self.select_dir_button.setText("Select \"outputs\" Directory")
-        
+
         self.clipboard_button = QtWidgets.QPushButton(self)
         self.clipboard_button.setText("Copy Image to clipboard")
 
@@ -176,7 +177,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.widget)
 
     def log_subprocess_output(self, pipe):
-        for line in iter(pipe.readline, b''): # b'\n'-separated lines
+        for line in iter(pipe.readline, b''):  # b'\n'-separated lines
             logging.info('got line from subprocess: %r', line)
 
     def _startImGenProcess(self, generated_command: str):
@@ -230,14 +231,13 @@ class MainWindow(QMainWindow):
             generated_string += f"--ddim_steps {str(self.ddim_steps)} "
 
         if os.path.exists(os.path.join(self.out_dir, "txt2img-samples")):
-           self.out_dir = os.path.join(self.out_dir, "txt2img-samples")
+            self.out_dir = os.path.join(self.out_dir, "txt2img-samples")
 
         generated_string += f"--outdir {self.out_dir} "
         generated_string += "--skip_grid --n_samples 1 --n_iter 1"
 
         logging.debug(generated_string)  # output generated_string to debug window
 
-        
         self._startImGenProcess(generated_string)  # Starting image generator
 
     def sel_dir(self):
@@ -289,7 +289,6 @@ class MainWindow(QMainWindow):
         except:
             err = QtWidgets.QErrorMessage(self)
             err.showMessage('Error reading settings file. Probably old. Delete it and try again')
-
 
     def save_settings(self):
         res: dict = {"seed": self.seed_line.text(),
