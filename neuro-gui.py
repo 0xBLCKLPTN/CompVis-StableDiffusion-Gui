@@ -105,9 +105,9 @@ class MainWindow(QMainWindow):
         self.layout.addRow(self.out_log)
         self.layout.addRow(self.select_dir_button)
         self.layout.addRow(self.new_seed_button)
-        self.layout.addRow(self.start_button)
         self.layout.addRow(self.save_settings_button, self.import_settings_button)
         self.layout.addRow(self.clipboard_button)
+        self.layout.addRow(self.start_button)
         self._init_button_slots()
 
     def _init_button_slots(self):
