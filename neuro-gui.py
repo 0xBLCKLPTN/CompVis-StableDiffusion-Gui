@@ -138,7 +138,7 @@ class MainWindow(QMainWindow):
         self.plms_bool.stateChanged.connect(self.plms_func)
         self.new_seed_button.clicked.connect(self.new_seed)
         self.save_settings_button.clicked.connect(self.save_settings)
-        self.import_settings_button.clicked.connect(self.import_settings)
+        self.import_settings_button.clicked.connect(self.find_import_settings)
         self.clipboard_button.clicked.connect(self.to_clipboard)
 
     def _init_log(self):
@@ -257,8 +257,7 @@ class MainWindow(QMainWindow):
         if self.last_image != "":
             QApplication.clipboard().setImage(QImage(self.last_image))
 
-    def import_settings(self):
-        tmp = self.out_dir
+    def find_import_settings(self):
         response = QFileDialog.getOpenFileNames(
             parent=self,
             caption='Select a data file',
@@ -266,39 +265,42 @@ class MainWindow(QMainWindow):
             filter="Json File (*.json)",
             initialFilter='Json File (*.json)'
         )
-        print(response[0])
-        with open(response[0][0]) as json_file:
-            data = json.load(json_file)
-        
-            # Print the type of data variable
-            print("Type:", type(data))
-            self.seed_line.setText(str(data["seed"]))
-            self.ddim_line.setText(str(data["ddim_steps"]))
-            if data["laion_enabled"] == True:
-                self.laion = True
-                self.laion_bool.setChecked(True)
-            if data["laion_enabled"] == False:
-                self.laion = False
-                self.laion_bool.setChecked(False)
-            
-            if data["plms_enabled"] == True:
-                self.plms = True
-                self.plms_bool.setChecked(True)
-            if data["plms_enabled"] == False:
-                self.plms = False
-                self.plms_bool.setChecked(False)
-            
-            self.height_line.setText(str(data["height"]))
-            self.width_line.setText(str(data["width"]))
+        if not response[0]:
+            return
+        self.import_settings(response[0][0])
+
+    def import_settings(self, filename):
+        print(filename)
+        try:
+            with open(filename) as json_file:
+                data = json.load(json_file)
+
+                # Print the type of data variable
+                print("Type:", type(data))
+                self.seed = int(data["seed"])
+                self.ddim_steps = int(data["ddim_steps"])
+                self.laion = data["laion_enabled"] is True
+                self.plms = data["plms_enabled"] is True
+                self.height = int(data["height"])
+                self.width = int(data["width"])
+                self.prompt = str(data["prompt"])
+                self.out_dir = str(data["outputs_dir"])
+                self.update_form()
+        except:
+            err = QtWidgets.QErrorMessage(self)
+            err.showMessage('Error reading settings file. Probably old. Delete it and try again')
+
 
     def save_settings(self):
-        res: dict = {"seed": self.seed,
+        res: dict = {"seed": self.seed_line.text(),
                      "plms_enabled": self.plms,
-                     "ddim_steps": self.ddim_steps,
+                     "ddim_steps": int(self.ddim_line.text()),
                      "laion_enabled": self.laion,
-                     "height": self.height,
-                     "width": self.width,
-                    }
+                     "height": int(self.height_line.text()),
+                     "width": int(self.width_line.text()),
+                     "prompt": self.prompt_line.toPlainText(),
+                     "outputs_dir": self.out_log.text(),
+                     }
 
         with open(self.default_setting_path, "w") as outfile:
             json.dump(res, outfile)
