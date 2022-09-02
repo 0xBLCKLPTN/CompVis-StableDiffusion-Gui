@@ -15,7 +15,6 @@ class QTextEditLogger(logging.Handler):
     def __init__(self, parent):
         super().__init__()
         self.widget = QtWidgets.QPlainTextEdit(parent)
-        self.widget.setFixedWidth(512)
         self.widget.setReadOnly(True)
 
     def emit(self, record):
@@ -39,7 +38,8 @@ class MainWindow(QMainWindow):
         self.laion = False
         self.random_seed = True
         self.height = 512
-        self.width = 640
+        self.width = 512
+        self.image_count = 1
         self.last_image = "rickroll.jpg"
         self.start_command = 'python3 scripts/txt2img.py --prompt'
         self._setMainUi()  # setting up ui
@@ -66,6 +66,15 @@ class MainWindow(QMainWindow):
         # round down to nearest divisible by 64.  This is for convenience-- 0 is still possible, 64 etc.
         self.height_line.setText(str(int(self.height_line.text()) - int(self.height_line.text()) % 64))
         self.width_line.setText(str(int(self.width_line.text()) - int(self.width_line.text()) % 64))
+        try:
+            if int(self.height_line.text()) < 256:
+                self.height_line.setText("256")
+                self.height = 256
+            if int(self.width_line.text()) < 256:
+                self.width_line.setText("256")
+                self.height = 256
+        except:
+            logging.debug("Error formatting input!")
 
     def _init_settings(self):
         # Initializing all elements
@@ -81,6 +90,8 @@ class MainWindow(QMainWindow):
         self.width_line = QLineEdit(self)
         self.width_line.setValidator(QRegExpValidator(intreg))
         self.width_line.editingFinished.connect(self.make_divisible_by_64)
+        self.image_count_line = QLineEdit(self)
+        self.image_count_line.setValidator(QRegExpValidator(intreg))
 
         self.plms_bool = QCheckBox("Enable plms", self)
         self.laion_bool = QCheckBox("Enable laion", self)
@@ -91,6 +102,7 @@ class MainWindow(QMainWindow):
 
         self.start_button = QtWidgets.QPushButton(self)
         self.start_button.setText("Start!")
+        self.start_button.setStyleSheet("background-color: lightgreen")
 
         self.save_settings_button = QtWidgets.QPushButton(self)
         self.save_settings_button.setText("Save Settings")
@@ -99,22 +111,23 @@ class MainWindow(QMainWindow):
         self.import_settings_button.setText("Import Settings…")
 
         self.select_dir_button = QtWidgets.QPushButton(self)
-        self.select_dir_button.setText("Select \"outputs\" Directory…")
+        self.select_dir_button.setText("Select \"outputs\" Folder…")
 
         self.clipboard_button = QtWidgets.QPushButton(self)
         self.clipboard_button.setText("Copy Image to Clipboard")
 
         self.out_log = QLabel(self.out_dir)
-        self.out_log.setFixedWidth(500)
+        self.out_log.setMinimumWidth(500)
         # Adds all elements to right layout
         self.layout.addRow(QLabel("Prompt:"), self.prompt_line)
         self.layout.addRow(QLabel("Seed:"), self.seed_line)
         self.layout.addRow(QLabel("Ddim Steps:"), self.ddim_line)
         self.layout.addRow(QLabel("Height:"), self.height_line)
         self.layout.addRow(QLabel("Width:"), self.width_line)
+        self.layout.addRow(QLabel("Image Count:"), self.image_count_line)
         self.layout.addRow(self.plms_bool, self.laion_bool)
         self.layout.addRow(self.random_seed_bool)
-        self.layout.addRow(QLabel("Current \"outputs\" Directory:"))
+        self.layout.addRow(QLabel("Current \"outputs\" Folder:"))
         self.layout.addRow(self.out_log)
         self.layout.addRow(self.select_dir_button)
         self.layout.addRow(self.save_settings_button, self.import_settings_button)
@@ -130,6 +143,7 @@ class MainWindow(QMainWindow):
         self.ddim_line.setText(str(self.ddim_steps))
         self.height_line.setText(str(self.height))
         self.width_line.setText(str(self.width))
+        self.image_count_line.setText(str(self.image_count))
         self.plms_bool.setCheckState(2 if self.plms is True else 0)
         self.laion_bool.setCheckState(2 if self.laion is True else 0)
         self.random_seed_bool.setCheckState(2 if self.random_seed is True else 0)
@@ -187,16 +201,23 @@ class MainWindow(QMainWindow):
 
     def _startImGenProcess(self, generated_command: str):
         self.start_button.setEnabled(False)
-        self.process = QtCore.QProcess(self)
-        self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
-        self.process.readyReadStandardOutput.connect(self.on_readyReadStandardOutput)
-        self.process.finished.connect(self.process_done)
-        self.process.start(generated_command)
+        try:
+            self.process = QtCore.QProcess(self)
+            self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+            self.process.readyReadStandardOutput.connect(self.on_readyReadStandardOutput)
+            self.process.finished.connect(self.process_done)
+            self.process.start(generated_command)
+        except:
+            logging.debug(f"Error doing:\n {generated_command}!")
+            self.start_button.setEnabled(True)
 
     def process_done(self):
         # look for the new image
         # setting up generated image.
-        last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
+        if int(self.image_count_line.text()) == 1:
+            last_images = glob.glob(os.path.join(self.out_dir, 'samples/*'))
+        else:
+            last_images = glob.glob(os.path.join(self.out_dir, '*'))
         self.last_image = max(last_images, key=os.path.getctime)
         self._set_image(self.last_image)
         self.start_button.setEnabled(True)
@@ -232,6 +253,12 @@ class MainWindow(QMainWindow):
         if self.width_line.text() != "":
             generated_string += f"--W {self.width_line.text()} "
 
+        if self.image_count_line.text() != "" and self.image_count_line.text() != "1":
+            generated_string += f"--n_iter {self.image_count_line.text()} "
+            generated_string += f"--n_rows {round(int(self.image_count_line.text()) / 3) + 1} "
+        else:
+            generated_string += f"--n_iter 1 --skip_grid "
+
         if self.ddim_line.text() != "":
             generated_string += f"--ddim_steps {str(self.ddim_line.text())} "
         if self.ddim_line.text() == "":
@@ -241,7 +268,7 @@ class MainWindow(QMainWindow):
             self.out_dir = os.path.join(self.out_dir, "txt2img-samples")
 
         generated_string += f"--outdir {self.out_dir} "
-        generated_string += "--skip_grid --n_samples 1 --n_iter 1"
+        generated_string += "--n_samples 1"
 
         logging.debug(generated_string)  # output generated_string to debug window
 
@@ -291,12 +318,15 @@ class MainWindow(QMainWindow):
                 self.random_seed = data["random_seed_enabled"] is True
                 self.height = int(data["height"])
                 self.width = int(data["width"])
+                self.image_count = int(data["image_count"])
                 self.prompt = str(data["prompt"])
                 self.out_dir = str(data["outputs_dir"])
                 self.update_form()
         except:
+            message = 'Error reading settings file. Probably old. Delete it and try again'
+            logging.debug(message)
             err = QtWidgets.QErrorMessage(self)
-            err.showMessage('Error reading settings file. Probably old. Delete it and try again')
+            err.showMessage(message)
 
     def save_settings(self):
         res: dict = {"seed": self.seed_line.text(),
@@ -305,6 +335,7 @@ class MainWindow(QMainWindow):
                      "laion_enabled": self.laion,
                      "height": int(self.height_line.text()),
                      "width": int(self.width_line.text()),
+                     "image_count": int(self.image_count_line.text()),
                      "prompt": self.prompt_line.toPlainText(),
                      "outputs_dir": self.out_log.text(),
                      "random_seed_enabled": self.random_seed,
