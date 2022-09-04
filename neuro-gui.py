@@ -64,9 +64,10 @@ class MainWindow(QMainWindow):
 
     def make_divisible_by_64(self):
         # round down to nearest divisible by 64.  This is for convenience-- 0 is still possible, 64 etc.
-        self.height_line.setText(str(int(self.height_line.text()) - int(self.height_line.text()) % 64))
-        self.width_line.setText(str(int(self.width_line.text()) - int(self.width_line.text()) % 64))
         try:
+            self.height_line.setText(str(int(self.height_line.text()) - int(self.height_line.text()) % 64))
+            self.width_line.setText(str(int(self.width_line.text()) - int(self.width_line.text()) % 64))
+
             if int(self.height_line.text()) < 256:
                 self.height_line.setText("256")
                 self.height = 256
