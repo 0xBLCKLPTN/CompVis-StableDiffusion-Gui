@@ -172,10 +172,13 @@ class MainWindow(QMainWindow):
     def _init_left_panel(self):
         # Image and debug window
         self.label = QLabel(self)
+        self.scroll_area = QScrollArea(self)
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setWidget(self.label)
         self._set_image()
         self._init_log()
 
-        self.left_panel.addWidget(self.label)
+        self.left_panel.addWidget(self.scroll_area)
         self.left_panel.addWidget(self.logTextBox.widget)
 
     def _init_right_panel(self):
