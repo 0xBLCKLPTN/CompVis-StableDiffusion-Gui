@@ -14,13 +14,13 @@ import json
 class QTextEditLogger(logging.Handler):
     def __init__(self, parent):
         super().__init__()
-        self.widget = QtWidgets.QPlainTextEdit(parent)
+        self.widget = QPlainTextEdit(parent)
         self.widget.setReadOnly(True)
 
     def emit(self, record):
         msg = self.format(record)
         self.widget.appendPlainText(msg)
-        self.widget.moveCursor(QtGui.QTextCursor.End)
+        self.widget.moveCursor(QTextCursor.End)
 
 
 class MainWindow(QMainWindow):
@@ -98,23 +98,23 @@ class MainWindow(QMainWindow):
         self.laion_bool = QCheckBox("Enable laion", self)
         self.random_seed_bool = QCheckBox("Random seed every time", self)
 
-        self.new_seed_button = QtWidgets.QPushButton(self)
+        self.new_seed_button = QPushButton(self)
         self.new_seed_button.setText("Randomize Seed")
 
-        self.start_button = QtWidgets.QPushButton(self)
+        self.start_button = QPushButton(self)
         self.start_button.setText("Start!")
         self.start_button.setStyleSheet("background-color: lightgreen")
 
-        self.save_settings_button = QtWidgets.QPushButton(self)
+        self.save_settings_button = QPushButton(self)
         self.save_settings_button.setText("Save Settings")
 
-        self.import_settings_button = QtWidgets.QPushButton(self)
+        self.import_settings_button = QPushButton(self)
         self.import_settings_button.setText("Import Settings…")
 
-        self.select_dir_button = QtWidgets.QPushButton(self)
+        self.select_dir_button = QPushButton(self)
         self.select_dir_button.setText("Select \"outputs\" Folder…")
 
-        self.clipboard_button = QtWidgets.QPushButton(self)
+        self.clipboard_button = QPushButton(self)
         self.clipboard_button.setText("Copy Image to Clipboard")
 
         self.out_log = QLabel(self.out_dir)
@@ -206,8 +206,8 @@ class MainWindow(QMainWindow):
     def _startImGenProcess(self, generated_command: str):
         self.start_button.setEnabled(False)
         try:
-            self.process = QtCore.QProcess(self)
-            self.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+            self.process = QProcess(self)
+            self.process.setProcessChannelMode(QProcess.MergedChannels)
             self.process.readyReadStandardOutput.connect(self.on_readyReadStandardOutput)
             self.process.finished.connect(self.process_done)
             self.process.start(generated_command)
@@ -226,7 +226,8 @@ class MainWindow(QMainWindow):
         self._set_image(self.last_image)
         self.start_button.setEnabled(True)
 
-    @QtCore.pyqtSlot()
+    pyqtSlot()
+
     def on_readyReadStandardOutput(self):
         text = self.process.readAllStandardOutput().data().decode()
         logging.info(text)
@@ -286,10 +287,10 @@ class MainWindow(QMainWindow):
         self.out_log.setText(self.out_dir)
 
     def laion_func(self, state):
-        self.laion = state == QtCore.Qt.Checked
+        self.laion = state == Qt.Checked
 
     def random_seed_func(self, state):
-        self.random_seed = state == QtCore.Qt.Checked
+        self.random_seed = state == Qt.Checked
 
     def to_clipboard(self):
         if self.last_image != "":
@@ -329,7 +330,7 @@ class MainWindow(QMainWindow):
         except:
             message = 'Error reading settings file. Probably old. Delete it and try again'
             logging.debug(message)
-            err = QtWidgets.QErrorMessage(self)
+            err = QErrorMessage(self)
             err.showMessage(message)
 
     def save_settings(self):
@@ -351,7 +352,7 @@ class MainWindow(QMainWindow):
         print(res)
 
     def plms_func(self, state):
-        self.plms = state == QtCore.Qt.Checked
+        self.plms = state == Qt.Checked
 
     def new_seed(self):
         self.seed = random.randint(-2147483648, 2147483647)
