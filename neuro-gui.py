@@ -394,7 +394,7 @@ class MainWindow(QMainWindow):
         self.import_settings(response[0][0])
 
     def import_settings(self, filename):
-        print(filename)
+        print("Importing settings from ", filename)
         try:
             with open(filename) as json_file:
                 data = json.load(json_file)
