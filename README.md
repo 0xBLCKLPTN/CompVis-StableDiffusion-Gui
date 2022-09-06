@@ -1,9 +1,13 @@
 # About
-This program is an add-on to the [image generator](https://github.com/CompVis/stable-diffusion) using PyQt5. You can copy generate an image to the clipboard, export and import neural network settings. 
+This is an single-file, cross-platform (Linux, Mac, and Windows) graphical interface for [Simple Diffusion](https://github.com/CompVis/stable-diffusion).
 
-![alt text](https://github.com/blcklptn/CompVis-StableDiffusion-Gui/blob/main/screenshot_update.png)
+You can set, export, and import your custom settings and copy your amazing results right to the clipboard for easy pasting.
 
+The GUI supports both img2img and txt2img.
 
+No web server or browser is required. The whole thing is a single python file (plus the pyqt5 package, which you can install with a single `pip` command).
+
+![alt text](./screenshot_update.png)
 
 
 ## Install:
