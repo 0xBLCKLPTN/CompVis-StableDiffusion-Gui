@@ -234,8 +234,10 @@ class MainWindow(QMainWindow):
         self._set_image()
         self._init_log()
 
-        self.left_panel.addWidget(self.scroll_area)
-        self.left_panel.addWidget(self.logTextBox.widget)
+        self.left_qsplitter = QSplitter(Qt.Orientation.Vertical)
+        self.left_qsplitter.addWidget(self.scroll_area)
+        self.left_qsplitter.addWidget(self.logTextBox.widget)
+        self.left_panel.addWidget(self.left_qsplitter)
 
     def _init_right_panel(self):
         self._init_settings()
@@ -243,8 +245,14 @@ class MainWindow(QMainWindow):
         self.right_panel.addWidget(self.formGroupBox)
 
     def _init_layer_hor(self):
-        self.layer_hor.addLayout(self.left_panel)
-        self.layer_hor.addLayout(self.right_panel)
+        self.splitter = QSplitter(self)
+        self.left_widget = QWidget(self)
+        self.left_widget.setLayout(self.left_panel)
+        self.right_widget = QWidget(self)
+        self.right_widget.setLayout(self.right_panel)
+        self.splitter.addWidget(self.left_widget)
+        self.splitter.addWidget(self.right_widget)
+        self.layer_hor.addWidget(self.splitter)
 
     def _setMainUi(self):
         self._init_layouts()
