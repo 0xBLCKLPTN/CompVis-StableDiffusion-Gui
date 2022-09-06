@@ -7,7 +7,7 @@ The GUI supports both img2img and txt2img.
 
 No web server or browser is required. The whole thing is a single python file (plus the pyqt5 package, which you can install with a single `pip` command).
 
-![alt text](./screenshot_update.png)
+![alt text](https://github.com/fat-tire/CompVis-StableDiffusion-Gui/blob/main/screenshot_update.png)
 
 
 ## Install:
