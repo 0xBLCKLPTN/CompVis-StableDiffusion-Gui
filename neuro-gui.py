@@ -168,7 +168,7 @@ class MainWindow(QMainWindow):
         self.height_line.setText(str(self.height))
         self.width_line.setText(str(self.width))
         self.image_count_line.setText(str(self.image_count))
-        self.strength_line.setValue(self.strength*100)
+        self.strength_line.setValue(int(self.strength*100))
         self.plms_bool.setChecked(self.plms)
         self.laion_bool.setChecked(self.laion)
         self.random_seed_bool.setChecked(self.random_seed)
