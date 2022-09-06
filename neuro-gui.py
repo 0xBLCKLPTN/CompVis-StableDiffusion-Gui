@@ -256,6 +256,8 @@ class MainWindow(QMainWindow):
         self.right_widget.setLayout(self.right_panel)
         self.splitter.addWidget(self.left_widget)
         self.splitter.addWidget(self.right_widget)
+        self.splitter.setStretchFactor(0, 1)
+        self.splitter.setStretchFactor(1, 0)
         self.layer_hor.addWidget(self.splitter)
 
     def _setMainUi(self):
