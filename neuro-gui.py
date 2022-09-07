@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
         self.start_command = "python3 scripts/" + self.image_type + ".py --prompt"
 
         self.prompt = "a photograph of an astronaut riding a horse"
-        self.strength = .7
+        self.strength = 0.7
         self.init_image_path = ""
         self.setBaseSize(1000, 1000)
         self.setWindowTitle("Stable Diffusion GUI")
@@ -88,7 +88,6 @@ class MainWindow(QMainWindow):
         self.image_type_combobox.addItem("txt2img")
         self.image_type_combobox.addItem("img2img")
         intreg = QRegExp("\\d+")
-        floatreg = QRegExp("[-+]?[0-9]*\\.?[0-9]+")
         self.prompt_line = QPlainTextEdit(self)
         self.seed_line = QLineEdit(self)
         self.seed_line.setValidator(QRegExpValidator(intreg))
@@ -100,8 +99,12 @@ class MainWindow(QMainWindow):
         self.width_line.setValidator(QRegExpValidator(intreg))
         self.image_count_line = QLineEdit(self)
         self.image_count_line.setValidator(QRegExpValidator(intreg))
-        self.strength_line = QLineEdit(self)
-        self.strength_line.setValidator(QRegExpValidator(floatreg))
+        self.strength_line = QSlider(Qt.Orientation.Horizontal)
+        self.strength_line.setMinimum(0)
+        self.strength_line.setMaximum(99)
+        self.strength_line.setValue(50)
+        self.strength_line.setTickPosition(QSlider.TicksBelow)
+        self.strength_line.setTickInterval(5)
 
         self.plms_bool = QCheckBox("Enable plms", self)
         self.laion_bool = QCheckBox("Enable laion", self)
@@ -164,7 +167,7 @@ class MainWindow(QMainWindow):
         self.height_line.setText(str(self.height))
         self.width_line.setText(str(self.width))
         self.image_count_line.setText(str(self.image_count))
-        self.strength_line.setText(str(self.strength))
+        self.strength_line.setValue(int(self.strength*100))
         self.plms_bool.setChecked(self.plms)
         self.laion_bool.setChecked(self.laion)
         self.random_seed_bool.setChecked(self.random_seed)
@@ -252,6 +255,8 @@ class MainWindow(QMainWindow):
         self.right_widget.setLayout(self.right_panel)
         self.splitter.addWidget(self.left_widget)
         self.splitter.addWidget(self.right_widget)
+        self.splitter.setStretchFactor(0, 1)
+        self.splitter.setStretchFactor(1, 0)
         self.layer_hor.addWidget(self.splitter)
 
     def _setMainUi(self):
@@ -332,7 +337,7 @@ class MainWindow(QMainWindow):
             if os.path.exists(os.path.join(self.out_dir, "img2img-samples")):
                 self.out_dir = os.path.join(self.out_dir, "img2img-samples")
             self.plms = False  # not supported on img2img
-            generated_string += f"--init-img \"{str(self.init_image_path)}\" --strength {(str(self.strength_line.text()))} "
+            generated_string += f"--init-img \"{str(self.init_image_path)}\" --strength {(str(float(self.strength_line.value()/100)))} "
 
         if self.plms:
             generated_string += "--plms "
@@ -365,7 +370,7 @@ class MainWindow(QMainWindow):
         self.update_form()
 
     def prompt_func(self):
-        self.prompt = self.prompt_line.toPlainText()
+        self.prompt = self.prompt_line.toPlainText().replace("\"","\\\"")
 
     def ddim_func(self):
         self.ddim_steps = int(self.ddim_line.text())
@@ -382,7 +387,7 @@ class MainWindow(QMainWindow):
         self.update_form()
 
     def strength_func(self, strength):
-        self.strength = int(self.strength_line.text())
+        self.strength = float(self.strength_line.value()/100)
         self.update_form()
 
     def to_clipboard(self):
@@ -440,7 +445,7 @@ class MainWindow(QMainWindow):
                      "prompt": self.prompt_line.toPlainText(),
                      "outputs_dir": self.out_log.text(),
                      "random_seed_enabled": self.random_seed,
-                     "strength": float(self.strength_line.text()),
+                     "strength": float(self.strength_line.value()/100),
                      "init_image_path": str(self.init_image_path),
                      "image_type": str(self.image_type)
                      }
