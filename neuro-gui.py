@@ -370,7 +370,7 @@ class MainWindow(QMainWindow):
         self.update_form()
 
     def prompt_func(self):
-        self.prompt = self.prompt_line.toPlainText()
+        self.prompt = self.prompt_line.toPlainText().replace("\"","\\\"")
 
     def ddim_func(self):
         self.ddim_steps = int(self.ddim_line.text())
