@@ -1,7 +1,11 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5 import *
+try:
+    from PyQt5.QtGui import *
+    from PyQt5.QtWidgets import *
+    from PyQt5.QtCore import *
+    from PyQt5 import *
+except ModuleNotFoundError:
+    print("The PyQt5 module is not found.  To install it, try\n\npip install pyqt5\n")
+    exit()
 import sys
 import logging
 import os
