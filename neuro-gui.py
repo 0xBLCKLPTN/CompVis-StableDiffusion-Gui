@@ -337,7 +337,7 @@ class MainWindow(QMainWindow):
             if os.path.exists(os.path.join(self.out_dir, "img2img-samples")):
                 self.out_dir = os.path.join(self.out_dir, "img2img-samples")
             self.plms = False  # not supported on img2img
-            generated_string += f"--init-img \"{str(self.init_image_path)}\" --strength {(str(float(self.strength_line.value()/100)))} "
+            generated_string += f"--init-img \"{str(self.init_image_path)}\" --strength {(str(float(self.strength_line.value() / 100)))} "
 
         if self.plms:
             generated_string += "--plms "
@@ -370,7 +370,7 @@ class MainWindow(QMainWindow):
         self.update_form()
 
     def prompt_func(self):
-        self.prompt = self.prompt_line.toPlainText().replace("\"","\\\"")
+        self.prompt = self.prompt_line.toPlainText().replace("\"", "\\\"")
 
     def ddim_func(self):
         self.ddim_steps = int(self.ddim_line.text())
@@ -387,7 +387,7 @@ class MainWindow(QMainWindow):
         self.update_form()
 
     def strength_func(self, strength):
-        self.strength = float(self.strength_line.value()/100)
+        self.strength = float(self.strength_line.value() / 100)
         self.update_form()
 
     def to_clipboard(self):
@@ -445,7 +445,7 @@ class MainWindow(QMainWindow):
                      "prompt": self.prompt_line.toPlainText(),
                      "outputs_dir": self.out_log.text(),
                      "random_seed_enabled": self.random_seed,
-                     "strength": float(self.strength_line.value()/100),
+                     "strength": float(self.strength_line.value() / 100),
                      "init_image_path": str(self.init_image_path),
                      "image_type": str(self.image_type)
                      }
