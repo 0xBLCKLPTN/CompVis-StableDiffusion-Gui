@@ -65,7 +65,9 @@ class MainWindow(QMainWindow):
     def _set_image(self, image: str = "rickroll.jpg"):
         # Set default/generated image
         self.pixmap = QPixmap(image)
-        self.label.setPixmap(self.pixmap)
+        self.scene = QGraphicsScene()
+        self.scene.addPixmap(self.pixmap)
+        self.label.setScene(self.scene)
 
     def make_divisible_by_64(self):
         # round down to nearest divisible by 64.  This is for convenience-- 0 is still possible, 64 etc.
@@ -230,7 +232,8 @@ class MainWindow(QMainWindow):
 
     def _init_left_panel(self):
         # Image and debug window
-        self.label = QLabel(self)
+        self.label = QGraphicsView(self)
+        self.label.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setWidget(self.label)
