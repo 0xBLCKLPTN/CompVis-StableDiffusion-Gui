@@ -68,6 +68,7 @@ class MainWindow(QMainWindow):
         self.scene = QGraphicsScene()
         self.scene.addPixmap(self.pixmap)
         self.label.setScene(self.scene)
+        self.label.setToolTip("Generated image(s) appear here")
 
     def make_divisible_by_64(self):
         # round down to nearest divisible by 64.  This is for convenience-- 0 is still possible, 64 etc.
@@ -89,39 +90,59 @@ class MainWindow(QMainWindow):
         self.image_type_combobox = QComboBox(self)
         self.image_type_combobox.addItem("txt2img")
         self.image_type_combobox.addItem("img2img")
+        self.image_type_combobox.setToolTip("Image-to-Image or Text-to-Image")
         intreg = QRegExp("\\d+")
         self.prompt_line = QPlainTextEdit(self)
+        self.prompt_line.setToolTip("The prompt to render")
         self.seed_line = QLineEdit(self)
         self.seed_line.setValidator(QRegExpValidator(intreg))
+        self.seed_line.setToolTip("A seed integer is used to initialize the image generation")
         self.ddim_line = QLineEdit(self)
         self.ddim_line.setValidator(QRegExpValidator(intreg))
+        self.ddim_line.setToolTip(
+            "Number of denoising diffusion implicit model (ddim) sampling steps.  This is how many "
+            "iterations over the starting image to produce the final image")
         self.height_line = QLineEdit(self)
         self.height_line.setValidator(QRegExpValidator(intreg))
+        self.height_line.setToolTip("The image height in pixels (must be a multiple of 64)")
         self.width_line = QLineEdit(self)
         self.width_line.setValidator(QRegExpValidator(intreg))
+        self.width_line.setToolTip("The image width in pixels (must be a multiple of 64)")
         self.image_count_line = QLineEdit(self)
         self.image_count_line.setValidator(QRegExpValidator(intreg))
+        self.image_count_line.setToolTip("Number of images to generate. If more than one, the results appear in a grid")
         self.strength_line = QSlider(Qt.Orientation.Horizontal)
         self.strength_line.setMinimum(0)
         self.strength_line.setMaximum(99)
         self.strength_line.setValue(50)
         self.strength_line.setTickPosition(QSlider.TicksBelow)
         self.strength_line.setTickInterval(5)
+        self.strength_line.setToolTip(
+            "Strength for noising/unnoising. Maximum corresponds to most destruction of information in init image")
 
         self.plms_bool = QCheckBox("Enable plms", self)
+        self.plms_bool.setToolTip("Use a sampler to help accelerate inference processing"
+                                  " and reduce needed steps.  If unchecked, use DDIMSampler")
         self.laion_bool = QCheckBox("Enable laion", self)
+        self.laion_bool.setToolTip("Use the LAION400M model")
         self.random_seed_bool = QCheckBox("Random seed every time", self)
+        self.random_seed_bool.setToolTip(
+            "Automatically repopulate the seed with a random number before generating images")
 
         self.select_init_image_button = QPushButton(self)
         self.select_init_image_button.setText("Select Init Image…")
+        self.select_init_image_button.setToolTip("Choose an init image as input."
+                                                 " The Strength setting sets how much of this image is preserved")
 
         self.init_image_path_line = QLabel(self.init_image_path)
 
         self.new_seed_button = QPushButton(self)
         self.new_seed_button.setText("Randomize Seed")
+        self.new_seed_button.setToolTip("Randomly generate a new seed number now.")
 
         self.start_button = QPushButton(self)
         self.start_button.setText("Start!")
+        self.start_button.setToolTip("Start generating!")
         self.start_button.setStyleSheet("background-color: lightgreen")
 
         self.save_settings_button = QPushButton(self)
